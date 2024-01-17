@@ -16,15 +16,23 @@ if __name__ == "__main__":
             messages=[
                 {"role": "user", "content": user_input},
             ]
-        ) 
+        )
 
-        response = completion.choices[0].message.function_call.arguments
-        dict_response = json.loads(response)
+        response = completion.choices[0].message
 
-        if dict_response["request_type"] == "process_visualization":
-            print("+++START PROCESS VISUALIZATION+++")
-            visualize_process(dict_response["underlying_data"])
-            print("+++END PROCESS VISUALIZATION+++")
+
+        try:
+            dict_response = json.loads(response.function_call.arguments)
+            
+            if dict_response["request_type"] == "process_visualization":
+                print("+++START PROCESS VISUALIZATION+++")
+                visualize_process(dict_response["underlying_data"])
+                print("+++END PROCESS VISUALIZATION+++")
+
+        except AttributeError:
+            print(response.content)
+
+        
 
         print("+++REQUEST ENDED+++")
 
